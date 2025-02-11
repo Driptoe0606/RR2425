@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #questionContainer {
+            margin-top: 20px;
+        }
+        #status {
+            margin-top: 20px;
+            font-style: italic;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Game</h1>
+        <div id="questionContainer">
+            <p id="spreadsheetName"></p>
+            <p id="question"></p>
+        </div>
+        <div id="buttons">
+            <button onclick="addGoogleSheet()">Add Google Sheet</button>
+            <button onclick="nextQuestion()">Next Question</button>
+            <button onclick="stopQuestion()">Stop Question</button>
+            <button onclick="showAnswer()">Show Answer</button>
+            <button onclick="checkGertrudeStatus()">Check Gertrude's Status</button>
+            <button onclick="exitGame()">Exit</button>
+        </div>
+        <p id="answer"></p>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestionIndex = null;
+        let typingInterval;
+        let isTyping = false;
+
+        function addGoogleSheet() {
+            const sheetUrl = prompt("Enter the Google Sheet URL:");
+            const spreadsheetName = prompt("Enter the name of the spreadsheet:");
+            
+            // Simulating fetch from Google Sheets (You would replace this with actual fetch API logic)
+            fetchQuestions(sheetUrl).then(fetchedQuestions => {
+                if (fetchedQuestions) {
+                    questions = [...questions, ...fetchedQuestions];
+                    alert(`Questions added successfully from ${spreadsheetName}!`);
+                }
+            });
+        }
+
+        function fetchQuestions(sheetUrl) {
+            // Simulated fetching questions (In a real scenario, you'd fetch from Google Sheets API)
+            return new Promise((resolve) => {
+                const dummyQuestions = [
+                    ["What is the capital of France?", "Paris"],
+                    ["What is 2 + 2?", "4"]
+                ];
+                resolve(dummyQuestions);
+            });
+        }
+
+        function nextQuestion() {
+            if (questions.length === 0) {
+                alert("No questions available! Add a Google Sheet first.");
+                return;
+            }
+
+            currentQuestionIndex = Math.floor(Math.random() * questions.length);
+            const [question, answer] = questions[currentQuestionIndex];
+            displayQuestion(question, answer);
+        }
+
+        function displayQuestion(question, answer) {
+            const questionContainer = document.getElementById("questionContainer");
+            const spreadsheetName = "Sample Spreadsheet";  // Replace with actual spreadsheet name
+            const questionElement = document.getElementById("question");
+            const spreadsheetNameElement = document.getElementById("spreadsheetName");
+            questionElement.textContent = "";
+            spreadsheetNameElement.textContent = `Spreadsheet: ${spreadsheetName}`;
+
+            let i = 0;
+            isTyping = true;
+
+            typingInterval = setInterval(() => {
+                if (i < question.length && isTyping) {
+                    questionElement.textContent += question[i];
+                    i++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, 100);
+        }
+
+        function stopQuestion() {
+            isTyping = false;
+            clearInterval(typingInterval);
+        }
+
+        function showAnswer() {
+            if (currentQuestionIndex === null) {
+                alert("No question to show answer for!");
+                return;
+            }
+            const [question, answer] = questions[currentQuestionIndex];
+            document.getElementById("answer").textContent = `Answer: ${answer}`;
+        }
+
+        function checkGertrudeStatus() {
+            document.getElementById("status").textContent = "Gertrude's status: Having a grand adventure!";
+        }
+
+        function exitGame() {
+            if (confirm("Are you sure you want to exit?")) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
